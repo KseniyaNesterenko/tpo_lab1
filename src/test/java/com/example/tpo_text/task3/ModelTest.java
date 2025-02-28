@@ -1,8 +1,11 @@
 package com.example.tpo_text.task3;
 import static org.junit.jupiter.api.Assertions.*;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
@@ -10,19 +13,16 @@ import java.util.List;
 
 class ModelTest {
 
-    @Test
-    @DisplayName("Тест закалки империи без флота")
-    void testHardenUpWithoutFleet() {
-        Empire empire = new Empire("ОПД", List.of());
-        assertEquals("Империя ОПД не может закаляться. У неё нет флота.", empire.hardenUp());
-    }
-
-    @Test
-    @DisplayName("Тест закалки империи с флотом")
-    void testHardenUpWithFleet() {
-        SpaceFleet fleet = new SpaceFleet("1st Fleet", List.of());
-        Empire empire = new Empire("ОПИ", List.of(fleet));
-        assertEquals("Империя ОПИ закаляется", empire.hardenUp());
+    @ParameterizedTest
+    @CsvSource({
+            "ОПД, false, Империя ОПД не может закаляться. У неё нет флота.",
+            "ОПИ, true, Империя ОПИ закаляется"
+    })
+    @DisplayName("Тест закалки империи")
+    void testHardenUp(String empireName, boolean hasFleet, String expected) {
+        List<SpaceFleet> fleets = hasFleet ? List.of(new SpaceFleet("Fleet", List.of())) : List.of();
+        Empire empire = new Empire(empireName, fleets);
+        assertEquals(expected, empire.hardenUp());
     }
 
     @Test
